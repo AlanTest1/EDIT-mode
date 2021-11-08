@@ -1,1 +1,1 @@
-# EDIT-mode
+# Keep Bitcoin.js
