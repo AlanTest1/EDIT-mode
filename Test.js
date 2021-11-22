@@ -3,5 +3,5 @@ intent('hello world', p => {
     p.play('(hello|hi there)');
 });
 
-//hi I am a comment :)//hi I am a comment :)//hi I am a comment :)//hi I am a comm///hi I am a comment :)//hi I am a comment :)//hi I am a comment :)/hi I am a comment :)//hi I am a comment :)//hi I am a comment :)//hi I am a comment :)ent :)
+//hi I am a comment :)//hi I am a comment :)//hi I am a comment :)//hi I am a comm///hi I am a comment :)//hi I am a comment :)//hi I am a comment :)//hi I am a comment :)/hi I am a comment :)//hi I am a comment :)//hi I am a comment :)//hi I am a comment :)ent :)
  
