@@ -89,6 +89,8 @@ function getCurrencyCode(currencyString) {
         rubles: 'RUB',
         dollar: 'USD',
         dollars: 'USD',
+        tenge: "KZT",
+        tenges: "KZT",
     };
     return values[currencyString.toLowerCase()];
 }
