@@ -14,19 +14,19 @@ intent(
         const start = getStartDate(period, p.timeZone);
         const end = api.moment().format(DATE_FORMAT);
 
-        const url = `https://api.coindesk.com/v1/bpi/historical/close.json?currency=USD&start=${start}&end=${end}`;
-        const data = await getData(url);
+        const data = await getHistoryData(period);
+        console.log(data);
 
-        if (!data) {
+        if (!data || !data.prices) {
             return sendErrorMessage(p);
         }
 
         const values = [];
         const dates = [];
 
-        Object.keys(data.bpi).forEach(date => {
-            const value = Math.trunc(data.bpi[date]);
-            dates.push(date);
+        data.prices.forEach(p => {
+            const value = Math.trunc(p[1]);
+            dates.push(api.moment(p[0]).format(DATE_FORMAT));
             values.push(value);
         });
 
@@ -54,15 +54,12 @@ intent(
     'how many $(CURRENCY dollar|dollars|pound|pounds|euro|euros|ruble|rubles) (do I need|does it cost|are needed) to buy Bitcoin',
     async p => {
         const currencyCode = p.CURRENCY && p.CURRENCY.value ? getCurrencyCode(p.CURRENCY.value) : 'USD';
-
-        const url = `https://api.coindesk.com/v1/bpi/currentprice/${currencyCode}.json`;
-        const data = await getData(url);
-
-        if (!data) {
+        const data = await getCurrentData(currencyCode);
+        if (!data || !data[0] || !data[0].current_price) {
             return sendErrorMessage(p);
         }
 
-        const price = Math.trunc(data.bpi[currencyCode].rate_float);
+        const price = Math.trunc(data[0].current_price);
         const currencyName = getCurrencyString(currencyCode);
 
         p.play(`The (current|) (Bitcoin price|price of Bitcoin) is ${price} ${currencyName}`);
@@ -104,7 +101,26 @@ function sendErrorMessage(p) {
     );
 }
 
-async function getData(url) {
+async function getCurrentData(currencyCode) {
+    const response = await api.axios.get(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currencyCode}&ids=bitcoin`);
+    return response.data;
+}
+
+
+async function getHistoryData(period) {
+    const to = Math.floor(Date.now() / 1000);
+    let from;
+    switch(period) {
+        case "month":
+            from = to - 30 * 24 * 3600; break;
+        case "year":
+            from = to - 365 * 24 * 3600; break;
+        case "week":
+            from = to - 7 * 24 * 3600; break;
+        default:
+            from = to;
+    }
+    const url = `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=usd&from=${from}&to=${to}`;
     const response = await api.axios.get(url);
     return response.data;
 }
